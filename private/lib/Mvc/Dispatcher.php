@@ -157,9 +157,12 @@
         public function dispatch(Http_Request $request) {
             /* Получаем объект роутера */
             $router = Resources::getInstance()->router;
+            $links = Resources::getInstance()->links;
+            
+            $base_path = $links->getBasePath();
             
             /* Если не получается определить обработчик, то генерируем ошибку */
-            if (false === ($handler = $router->dispatch($request)))
+            if (false === ($handler = $router->dispatch($request, $base_path)))
             {
                 $msg = 'Контроллер/действие не определены';
                 $this->_raise_error(404, $msg, $request);

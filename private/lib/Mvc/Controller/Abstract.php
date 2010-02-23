@@ -92,9 +92,12 @@
             
             /* Настраиваем объект работы с шаблонами и выводим страницу */
             $view = Resources::getInstance()->view;
+            $links = Resources::getInstance()->links;
+            
             $view->setLayout($layout)
                  ->setTemplate($template)
                  ->set('_request', $this->_request)
+                 ->set('_links', $links)
                  ->setVars($view_vars)
                  ->render();
         }
