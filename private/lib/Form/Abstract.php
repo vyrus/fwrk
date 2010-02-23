@@ -227,6 +227,7 @@
         * 
         * @param  Http_Request $request
         * @return boolean
+        * @todo Split to attachRequest and validate.
         */
         public function validate(Http_Request $request) {
             /**
