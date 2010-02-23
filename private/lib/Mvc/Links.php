@@ -72,8 +72,19 @@
         */
         public function addRoute(array $route) {
             $route = (object) $route;
+            
+            /* Если для маршрута задан алиас, */
+            if (isset($route->alias)) {
+                /* то используем его */
+                $alias = $route->alias;
+            } else {
+                /* иначе составляем алиас по имени контроллера и действия */
+                $alias = sprintf('%s:%s', $route->handler['controller'],
+                                          $route->handler['action']);
+            }
+            
             /* Запоминаем маршрут по его алиасу */
-            $this->_routes[$route->alias] = $route;
+            $this->_routes[$alias] = $route;
             
             return $this;
         }
