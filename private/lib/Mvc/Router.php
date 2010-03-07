@@ -28,6 +28,13 @@
         const URL_DELIMITER = '/';
         
         /**
+        * Ключ элемента из массива $_SERVER, в котором содержится путь URL'а.
+        * 
+        * @var const
+        */
+        const URL_PATH_KEY = 'REDIRECT_URL';
+        
+        /**
         * Список маршрутов.
         * 
         * @var array
@@ -95,9 +102,10 @@
             * @todo Делать urldecode?
             */
             /* Определяем строку запроса */
-            $server = $request->server;
-            if (isset($server['REDIRECT_URL'])) {
-                $path = strtolower($server['REDIRECT_URL']);
+            $url_path = & $request->server[self::URL_PATH_KEY];
+            
+            if (isset($url_path)) {
+                $path = strtolower($url_path);
                 
                 /* Удаляем базовую часть пути */
                 $base_len = strlen($base_path);

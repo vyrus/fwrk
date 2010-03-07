@@ -28,6 +28,28 @@
         const ERROR_ACTION_NOT_FOUND = 'error-action-not-found';
         
         /**
+        * Название метода-перехватчика, вызываемого перед передачей управления 
+        * непосредственно запрошенному действию контроллера.
+        * 
+        * @var const
+        */
+        const METHOD_BEFORE_ACTION = 'beforeAction';
+        
+        /**
+        * Сообщение от перехватчика события для прекращения обработки запроса.
+        * 
+        * @var const
+        */
+        const DISPATCH_BREAK = 'dispatch-break';
+        
+        /**
+        * Сообщение от перехватчика события для продолжения обработки запроса.
+        * 
+        * @var const
+        */
+        const DISPATCH_CONTINUE = 'dispatch-continue';
+        
+        /**
         * Перехватывать ли различные ошибки. Если установлено в false, то
         * будут генерироваться исключения. Если в true, то управление будет
         * передаваться соответствующему обработчичку.
@@ -287,6 +309,19 @@
 
             /* Инициализируем контроллер */
             $controller = new $class($request);
+            
+            /* Если в контроллере задан метод-перехватчик действия, */
+            if ($this->_isCallable($class, self::METHOD_BEFORE_ACTION))
+            {
+                /* то сначала передаём управление ему */
+                $callback = array($controller, self::METHOD_BEFORE_ACTION);
+                
+                /* И если нас просят прекратить обрабатывать запрос, */
+                if (self::DISPATCH_BREAK === ($r = call_user_func($callback))) {
+                    /* то не настаиваем :) */
+                    return self::ERROR_SUCCESS;
+                }
+            }
             
             /* Настраиваем параметры вызова */
             $callback = array($controller, $method);
