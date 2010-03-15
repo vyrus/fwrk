@@ -15,6 +15,16 @@
         protected $_routes = array();
         
         /**
+        * Базовый адрес сайта.
+        */
+        protected $_base_url;
+        
+        /**
+        * Адрес сайта.
+        */
+        protected $_site_url;
+        
+        /**
         * Базовый путь до директории, из которой работает движок.
         */
         protected $_base_path;
@@ -29,18 +39,30 @@
         }
         
         /**
-        * Установка базового адреса. Производится для определения пути к движку 
-        * относительно корня домена.
+        * Установка базового адреса. Производится для определения адреса сайта 
+        * и пути к движку относительно корня домена.
         * 
         * @return Mvc_Links Fluent interface.
         */
         public function setBaseUrl($url) {
             /* Разбиваем адрес на части */
             $url = parse_url($url);
+            
             /* И если в адресе указан путь, запоминаем его */
             $this->_base_path = (isset($url['path']) ? $url['path'] : '');
+            /* А также запоминаем адрес сайта */
+            $this->_site_url = $url['scheme'] . '://' . $url['host'];
             
             return $this;
+        }
+        
+        /**
+        * Возвращает адрес сайта.
+        * 
+        * @return string
+        */
+        public function getSiteUrl() {
+            return $this->_site_url;
         }
         
         /**
