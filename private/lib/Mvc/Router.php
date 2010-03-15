@@ -62,6 +62,78 @@
         }
         
         /**
+        * Преобразование маршрутов в компактном виде к полному виду.
+        * 
+        * Компактный вид статичного маршрута:
+        * array(
+        *     'шаблон', 'контроллер', 'действие', 
+        *     [array('параметр' => 'значение'), ] 'алиас', 
+        *     Mvc_Router::ROUTE_STATIC
+        * )
+        * 
+        * Компактный вид маршрута на основе регулярного выражения:
+        * array(
+        *     'регекс', array('параметры'), 'контроллер', 'действие', 
+        *     [array('параметр' => 'значение'), ] 'алиас', 
+        *     Mvc_Router::ROUTE_REGEX
+        * )
+        * 
+        * @param  array $short_routes Маршруты в компактном виде.
+        * @return array
+        */
+        public static function expandRoutes(array $short_routes = array()) {
+            $full_routes = array();
+            
+            /* Перебираем маршруты и приводим их к полному виду */
+            foreach ($short_routes as $route)
+            {
+                /* Очищаем переменные, чтобы не осталось данных от других 
+                маршрутов */
+                $pattern = null;
+                $handler = null;
+                
+                /* Берём последний элемент - тип маршрута */
+                $type = array_pop($route); 
+                
+                /* В зависимости от типа выбираем шаблон */
+                switch ($type)
+                {
+                    case self::ROUTE_STATIC:
+                        $pattern = array_shift($route);
+                        break;
+                        
+                    case self::ROUTE_REGEX:
+                        $pattern['regex']  = array_shift($route);
+                        $pattern['params'] = array_shift($route);
+                        break;
+                }   
+                
+                /* Выбираем параметры обработчика */
+                $handler['controller'] = array_shift($route);
+                $handler['action']     = array_shift($route);
+                
+                /* Если осталось больше двух элементов, сейчас - параметры 
+                запроса */
+                if (sizeof($route) > 1) {
+                    $handler['params'] = array_shift($route);
+                }
+                
+                /* Берём алиас */
+                $alias = array_shift($route);
+                
+                /* Сохраняем маршрут в конфиге */
+                $full_routes[] = array(
+                    'alias'   => $alias,
+                    'type'    => $type,
+                    'pattern' => $pattern,
+                    'handler' => $handler
+                );
+            }
+            
+            return $full_routes;
+        }
+        
+        /**
         * Добавление списка маршрутов.
         * 
         * @param  array $routes Список маршрутов.
